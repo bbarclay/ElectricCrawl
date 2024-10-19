@@ -1,8 +1,22 @@
+import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import icon from '../../assets/icon.svg';
 import './App.css';
 
 function Hello() {
+  const [crawlerResult, setCrawlerResult] = useState('');
+  const [url, setUrl] = useState('');
+
+  const runCrawler = async () => {
+    try {
+      const result = await window.electron.ipcRenderer.invoke('run-crawler', url);
+      setCrawlerResult(result);
+    } catch (error) {
+      console.error('Error running crawler:', error);
+      setCrawlerResult('Error: ' + error.message);
+    }
+  };
+
   return (
     <div>
       <div className="Hello">
@@ -10,30 +24,12 @@ function Hello() {
       </div>
       <h1>electron-react-boilerplate</h1>
       <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
+ 
+        <button onClick={runCrawler}>Run Crawler</button>
+      </div>
+      <div>
+        <h2>Crawler Result:</h2>
+        <pre>{crawlerResult}</pre>
       </div>
     </div>
   );
